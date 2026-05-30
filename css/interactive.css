@@ -2,38 +2,90 @@
 .skill-row {
   display: flex;
   align-items: center;
-  margin: 8px 0;
+  margin: 12px 0;
+  padding: 8px 0;
+  transition: transform 0.2s ease;
+}
+
+.skill-row:hover {
+  transform: translateX(4px);
 }
 
 .skill-name {
   flex: 0 0 28%;
   color: #374054;
   font-weight: 600;
+  font-size: 0.95em;
 }
 
 .skill-bar {
   flex: 1;
-  height: 10px;
-  background: #e9e9ec;
+  height: 12px;
+  background: linear-gradient(90deg, #f0f0f4, #e0e0e8);
   border-radius: 999px;
   margin-left: 16px;
   overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.skill-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(0, 0, 0, 0.05) 100%);
+  border-radius: 999px;
+  pointer-events: none;
 }
 
 .skill-fill {
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, #3498db, #3ab0ff);
+  background: linear-gradient(90deg, #3498db 0%, #2ecc71 50%, #3ab0ff 100%);
   border-radius: 999px;
-  transition: width 900ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  transition: width 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+  border-radius: 999px;
+}
+
+.skill-fill.animated {
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(46, 204, 113, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  }
 }
 
 .skill-percent {
   margin-left: 12px;
   flex: 0 0 48px;
   text-align: right;
-  color: #74808a;
-  font-size: 0.95em;
+  color: #3498db;
+  font-size: 0.9em;
+  font-weight: 600;
 }
 
 @media only screen and (max-width: 768px) {
@@ -42,6 +94,9 @@
   }
   .skill-percent {
     display: none;
+  }
+  .skill-row:hover {
+    transform: translateX(2px);
   }
 }
 .skill-row{display:flex;align-items:center;margin:8px 0}

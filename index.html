@@ -616,6 +616,10 @@
                 var $el = $(this);
                 $el.css('width', '0%');
                 $el.attr('aria-valuenow', 0);
+                // Add percentage label if not exists
+                if (!$el.next('.skill-percent').length) {
+                    $el.closest('.skill-row').append('<div class="skill-percent">0%</div>');
+                }
             });
         }
 
@@ -624,6 +628,9 @@
             var v = parseInt($el.data('value'), 10) || 0;
             $el.css('width', v + '%');
             $el.attr('aria-valuenow', v);
+            $el.addClass('animated');
+            // Update percentage text
+            $el.closest('.skill-row').find('.skill-percent').text(v + '%');
         }
 
         $(function(){
