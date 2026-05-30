@@ -12,13 +12,30 @@
 
 (function($) {
 
-    // Remove no-js class
     $('html').removeClass('no-js');
 
-    // Animate to section when nav is clicked
-    $('header a').click(function(e) {
+    var $header = $('header');
+    var $navLinks = $('header a[href^="#"]');
 
-        // Treat as normal link if no-scroll class
+    function setActiveNav() {
+        var scrollPos = $(window).scrollTop() + 120;
+        var current = '';
+
+        $navLinks.each(function() {
+            var target = $(this).attr('href');
+            var $section = $(target);
+            if ($section.length && $section.offset().top <= scrollPos) {
+                current = target;
+            }
+        });
+
+        $navLinks.removeClass('active');
+        if (current) {
+            $navLinks.filter('[href="' + current + '"]').addClass('active');
+        }
+    }
+
+    $('header a').click(function(e) {
         if ($(this).hasClass('no-scroll')) return;
 
         e.preventDefault();
@@ -29,69 +46,124 @@
             scrollTop: scrollDistance + 'px'
         }, Math.abs(window.pageYOffset - $(heading).offset().top) / 1);
 
-        // Hide the menu once clicked if mobile
-        if ($('header').hasClass('active')) {
-            $('header, body').removeClass('active');
+        if ($header.hasClass('active')) {
+            $header.removeClass('active');
+            $('body').removeClass('active');
         }
     });
 
-    // Scroll to top
     $('#to-top').click(function() {
-        $('html, body').animate({
-            scrollTop: 0
-        }, 500);
+        $('html, body').animate({ scrollTop: 0 }, 500);
     });
 
-    // Scroll to first element
     $('#lead-down span').click(function() {
         var scrollDistance = $('#lead').next().offset().top;
-        $('html, body').animate({
-            scrollTop: scrollDistance + 'px'
-        }, 500);
+        $('html, body').animate({ scrollTop: scrollDistance + 'px' }, 500);
     });
 
-    // Create timeline
     $('#experience-timeline').each(function() {
+        var $this = $(this);
+        var $userContent = $this.children('div');
 
-        $this = $(this); // Store reference to this
-        $userContent = $this.children('div'); // user content
-
-        // Create each timeline block
         $userContent.each(function() {
             $(this).addClass('vtimeline-content').wrap('<div class="vtimeline-point"><div class="vtimeline-block"></div></div>');
         });
 
-        // Add icons to each block
         $this.find('.vtimeline-point').each(function() {
-            $(this).prepend('<div class="vtimeline-icon"><i class="fa fa-map-marker"></i></div>');
-        });
+            var $content = $(this).find('.vtimeline-content');
+            var logo = $content.data('logo');
+            var company = $content.data('company');
 
-        // Add dates to the timeline if exists
-        $this.find('.vtimeline-content').each(function() {
-            var date = $(this).data('date');
-            if (date) { // Prepend if exists
-                $(this).parent().prepend('<span class="vtimeline-date">'+date+'</span>');
+            if (logo) {
+                $(this).prepend(
+                    '<div class="vtimeline-icon">' +
+                        '<img src="' + logo + '" alt="' + (company || 'Company') + ' logo">' +
+                    '</div>'
+                );
+            } else {
+                $(this).prepend('<div class="vtimeline-icon"><i class="fa fa-briefcase"></i></div>');
             }
         });
 
+        $this.find('.vtimeline-content').each(function() {
+            var date = $(this).data('date');
+            if (date) {
+                $(this).parent().prepend('<span class="vtimeline-date">' + date + '</span>');
+            }
+        });
     });
 
-    // Open mobile menu
     $('#mobile-menu-open').click(function() {
-        $('header, body').addClass('active');
+        $header.addClass('active');
+        $('body').addClass('active');
     });
 
-    // Close mobile menu
     $('#mobile-menu-close').click(function() {
-        $('header, body').removeClass('active');
+        $header.removeClass('active');
+        $('body').removeClass('active');
     });
 
-    // Load additional projects
-    $('#view-more-projects').click(function(e){
+    $('#view-more-projects').click(function(e) {
         e.preventDefault();
         $(this).fadeOut(300, function() {
             $('#more-projects').fadeIn(300);
         });
     });
+
+    $(window).on('scroll', function() {
+        if ($(window).scrollTop() > 80) {
+            $header.addClass('sticky');
+        } else {
+            $header.removeClass('sticky');
+        }
+        setActiveNav();
+    });
+
+    setActiveNav();
+
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            observer.observe(el);
+        });
+    } else {
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            el.classList.add('visible');
+        });
+    }
+
+    var yearEl = document.getElementById('year');
+    if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+    }
+
+    var themeToggle = document.getElementById('theme-toggle');
+    var metaTheme = document.querySelector('meta[name="theme-color"]');
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (metaTheme) metaTheme.setAttribute('content', '#0f172a');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if (metaTheme) metaTheme.setAttribute('content', '#0f172a');
+        }
+        localStorage.setItem('theme', theme);
+    }
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(isDark ? 'light' : 'dark');
+        });
+    }
 
 })(jQuery);
