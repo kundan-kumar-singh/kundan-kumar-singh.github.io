@@ -1,0 +1,11 @@
+/* Interactive styles for skill proficiency bars */
+.skill-row{display:flex;align-items:center;margin:8px 0}
+.skill-name{flex:0 0 28%;color:#374054;font-weight:600}
+.skill-bar{flex:1;height:10px;background:#e9e9ec;border-radius:999px;margin-left:16px;overflow:hidden}
+.skill-fill{height:100%;width:0;background:linear-gradient(90deg,#3498db,#3ab0ff);border-radius:999px;transition:width 900ms cubic-bezier(.2,.9,.2,1)}
+.skill-percent{margin-left:12px;flex:0 0 48px;text-align:right;color:#74808a;font-size:0.95em}
+
+@media only screen and (max-width: 768px){
+  .skill-name{flex-basis:36%}
+  .skill-percent{display:none}
+}
