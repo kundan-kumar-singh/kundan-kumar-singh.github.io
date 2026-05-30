@@ -35,6 +35,7 @@
 </head>
 
 <body>
+    <div id="scroll-progress" aria-hidden="true"></div>
     <button id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
         <i class="fa fa-moon-o theme-icon-dark" aria-hidden="true"></i>
         <i class="fa fa-sun-o theme-icon-light" aria-hidden="true"></i>
@@ -115,15 +116,15 @@
                     </p>
                     <div class="about-highlights">
                         <div class="highlight-card">
-                            <span class="highlight-value">1,500+</span>
+                            <span class="highlight-value" data-value="1500">1,500+</span>
                             <span class="highlight-label">Customers Onboarded (MSP)</span>
                         </div>
                         <div class="highlight-card">
-                            <span class="highlight-value">85%</span>
+                            <span class="highlight-value" data-value="85">85%</span>
                             <span class="highlight-label">Code Coverage Achieved</span>
                         </div>
                         <div class="highlight-card">
-                            <span class="highlight-value">7+</span>
+                            <span class="highlight-value" data-value="7">7+</span>
                             <span class="highlight-label">Years Experience</span>
                         </div>
                         <div class="highlight-card">
@@ -212,9 +213,15 @@
         <h2 class="heading">Projects</h2>
         <p class="section-subtitle">Selected open-source work from my GitHub profile.</p>
         <div class="container">
+            <div class="project-filters">
+                <button class="filter-btn active" data-filter="all" type="button">All</button>
+                <button class="filter-btn" data-filter="go" type="button">Go</button>
+                <button class="filter-btn" data-filter="open-source" type="button">Open Source</button>
+                <button class="filter-btn" data-filter="profile" type="button">Profile</button>
+            </div>
             <div class="row project-grid">
 
-                <div class="project-card shadow-large reveal">
+                <div class="project-card shadow-large reveal" data-tags="go,rest api,testing">
                     <div class="project-card-header">
                         <i class="fa fa-globe project-icon" aria-hidden="true"></i>
                         <span class="project-lang">Go</span>
@@ -234,7 +241,7 @@
                     </a>
                 </div>
 
-                <div class="project-card shadow-large reveal">
+                <div class="project-card shadow-large reveal" data-tags="go,dsa,open-source">
                     <div class="project-card-header">
                         <i class="fa fa-code project-icon" aria-hidden="true"></i>
                         <span class="project-lang">Go</span>
@@ -254,7 +261,7 @@
                     </a>
                 </div>
 
-                <div class="project-card shadow-large reveal">
+                <div class="project-card shadow-large reveal" data-tags="github,profile,open-source">
                     <div class="project-card-header">
                         <i class="fa fa-user project-icon" aria-hidden="true"></i>
                         <span class="project-lang">GitHub</span>
@@ -340,9 +347,12 @@
         <h2>Get in Touch</h2>
         <p class="contact-intro">Open to backend engineering roles, collaborations, and interesting technical conversations.</p>
         <div class="contact-links">
-            <a href="mailto:kundan_kumar_singh@outlook.com" class="contact-chip no-scroll">
+            <a href="mailto:kundan_kumar_singh@outlook.com" class="contact-chip no-scroll" id="email-link">
                 <i class="fa fa-envelope" aria-hidden="true"></i> kundan_kumar_singh@outlook.com
             </a>
+            <button id="copy-email" class="contact-chip copy-button" type="button">
+                <i class="fa fa-clipboard" aria-hidden="true"></i> Copy Email
+            </button>
             <a href="tel:+919905034764" class="contact-chip no-scroll">
                 <i class="fa fa-phone" aria-hidden="true"></i> (+91) 9905034764
             </a>
@@ -362,6 +372,7 @@
                 <input type="email" name="email" placeholder="Your email" required>
                 <textarea name="message" placeholder="Your message" required></textarea>
                 <button type="submit">Send Message</button>
+                <div id="form-message" class="form-message visually-hidden" role="status"></div>
             </form>
         </div>
     </div>

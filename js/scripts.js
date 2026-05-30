@@ -16,6 +16,11 @@
 
     var $header = $('header');
     var $navLinks = $('header a[href^="#"]');
+    var $filterButtons = $('.project-filters button');
+    var $projectCards = $('.project-card');
+    var $copyEmail = $('#copy-email');
+    var $formMessage = $('#form-message');
+    var $statValues = $('.highlight-value[data-value]');
 
     function setActiveNav() {
         var scrollPos = $(window).scrollTop() + 120;
@@ -32,6 +37,64 @@
         $navLinks.removeClass('active');
         if (current) {
             $navLinks.filter('[href="' + current + '"]').addClass('active');
+        }
+    }
+
+    function updateScrollProgress() {
+        var scrollTop = $(window).scrollTop();
+        var docHeight = $(document).height() - $(window).height();
+        var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        $('#scroll-progress').css('width', progress + '%');
+    }
+
+    function animateNumber($el) {
+        var target = parseInt($el.data('value'), 10);
+        if (isNaN(target) || target <= 0) return;
+        var current = 0;
+        var duration = 1200;
+        var stepTime = Math.max(Math.floor(duration / target), 20);
+        var increment = Math.max(Math.ceil(target / (duration / stepTime)), 1);
+
+        var counter = setInterval(function() {
+            current += increment;
+            if (current >= target) {
+                clearInterval(counter);
+                if ($el.text().indexOf('%') > -1) {
+                    $el.text(target + '%');
+                } else {
+                    $el.text(target + (target >= 1000 ? '+' : ''));
+                }
+                return;
+            }
+            $el.text(current + (target >= 1000 ? '+' : ''));
+        }, stepTime);
+    }
+
+    function animateCounters() {
+        $statValues.each(function() {
+            var $el = $(this);
+            if ($el.hasClass('counted')) return;
+            $el.addClass('counted');
+            animateNumber($el);
+        });
+    }
+
+    function setProjectFilter(tag) {
+        if (!tag || tag === 'all') {
+            $projectCards.removeClass('hidden');
+            return;
+        }
+
+        $projectCards.each(function() {
+            var tags = ($(this).data('tags') || '').toLowerCase();
+            $(this).toggleClass('hidden', tags.indexOf(tag) === -1);
+        });
+    }
+
+    function showFormMessage(text) {
+        if ($formMessage.length) {
+            $formMessage.removeClass('visually-hidden');
+            $formMessage.text(text);
         }
     }
 
@@ -103,6 +166,58 @@
         $('body').removeClass('active');
     });
 
+    if ($filterButtons.length) {
+        $filterButtons.on('click', function() {
+            var tag = $(this).data('filter');
+            $filterButtons.removeClass('active');
+            $(this).addClass('active');
+            setProjectFilter(tag);
+        });
+    }
+
+    if ($copyEmail.length) {
+        $copyEmail.on('click', function() {
+            var email = $('#email-link').text().trim();
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(email).then(function() {
+                    showFormMessage('Email copied to clipboard!');
+                }).catch(function() {
+                    showFormMessage('Unable to copy email. Please copy manually.');
+                });
+            } else {
+                var $temp = $('<textarea>');
+                $('body').append($temp);
+                $temp.val(email).select();
+                document.execCommand('copy');
+                $temp.remove();
+                showFormMessage('Email copied to clipboard!');
+            }
+        });
+    }
+
+    if ($('#contact-form form').length) {
+        $('#contact-form form').on('submit', function() {
+            showFormMessage('Sending your message...');
+        });
+    }
+
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var statObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    statObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.highlight-value[data-value]').forEach(function(el) {
+            statObserver.observe(el);
+        });
+    } else {
+        animateCounters();
+    }
+
     $('#view-more-projects').click(function(e) {
         e.preventDefault();
         $(this).fadeOut(300, function() {
@@ -117,9 +232,11 @@
             $header.removeClass('sticky');
         }
         setActiveNav();
+        updateScrollProgress();
     });
 
     setActiveNav();
+    updateScrollProgress();
 
     if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         var observer = new IntersectionObserver(function(entries) {
